@@ -2,6 +2,7 @@ package com.example.riconoscimento_vocale;
 
 import java.util.ArrayList;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
@@ -12,14 +13,12 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.speech.RecognizerIntent;
 import android.widget.TextView;
-//import android.support.v4.app.NavUtils;
-
 
 public class MainActivity extends Activity implements OnClickListener
 {
 
     public ListView mList;
-    public Button speakButton;
+    public Button speakButton, salva;
     public TextView tv;
     String  contenuto="";
 
@@ -30,19 +29,28 @@ public class MainActivity extends Activity implements OnClickListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         speakButton = (Button) findViewById(R.id.bottone);
+        salva = (Button) findViewById(R.id.button2);
         tv=(TextView) findViewById(R.id.textView3);
         speakButton.setOnClickListener(this);
 
-        //voiceinputbuttons();
+        salva.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v)
+            {
+                contenuto=contenuto.replace(' ','\n');
+                if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
+                    android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    clipboard.setText(contenuto);
+                } else {
+                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    android.content.ClipData clip = android.content.ClipData.newPlainText("Copied Text", contenuto);
+                    clipboard.setPrimaryClip(clip);
+                }
+                Toast.makeText(MainActivity.this, "Elenco copiato", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    /*
-    public void voiceinputbuttons() {
-        speakButton = (Button) findViewById(R.id.bottone);
-        tv=(TextView) findViewById(R.id.textView1);
-       // mList = (ListView) findViewById(R.id.lista);
-    }
-*/
+
 
     public void startVoiceRecognitionActivity() {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
